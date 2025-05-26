@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="description" content="Current Weather Web Page PHP" />
   <meta name="keywords" content="mths, icd2o" />
-  <meta name="author" content="Adrina peighambarzadeh" />
+  <meta name="author" content="Adrina Peighambarzadeh" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.light_blue-orange.min.css" />
@@ -27,38 +27,39 @@
       </div>
     </header>
     <main class="mdl-layout__content">
-      <div class="page-content">Click the button to get the current weather.
-        <br />
-        <br />
-        <form action="#">
-          <!-- Accent-colored raised button with ripple -->
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-            type="submit">
+      <div class="page-content">
+        Click the button to get the current weather.
+        <br /><br />
+        <form method="post">
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" type="submit">
             Click to see the weather!
           </button>
         </form>
-      </div>
-      <?php
-      async () {
-        try {
-          $resultJSON = await fetch(
-            "https://api.openweathermap.org/data/2.5/weather?lat=45.4211435&lon=-75.6900574&appid=fe1d80e1e103cff8c6afd190cad23fa5"
-          )
-          $jsonData = await resultJSON.json();
-          console.log(jsonData);
-          $weatherIconId = jsonData.weather[0].icon;
-          $weatherIconUrl = "https://openweathermap.org/img/wn/" + weatherIconId + "@2x.png";
-          $currentWeatherKelvin = jsonData.main.temp
-          $currentWeatherCelcius = currentWeatherKelvin - 273.15;
-      
-          // output
-          echo "<p> Temperature is " + $currentWeatherCelcius.toFixed(0) + "°C. </p> ". </br> <img src =" + $weatherIconUrl + " alt='Weather Icon'>"
-        } catch (error) {
-          // If an error has occured
-          echo "Sorry, an error has occured. Please try again later."
+
+        <?php
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+          // OpenWeatherMap API call
+          $url = "https://api.openweathermap.org/data/2.5/weather?lat=45.4211435&lon=-75.6900574&appid=fe1d80e1e103cff8c6afd190cad23fa5";
+
+          // Get the data
+          $response = file_get_contents($url);
+
+          if ($response !== false) {
+            $data = json_decode($response, true);
+
+            $tempKelvin = $data['main']['temp'];
+            $tempCelsius = round($tempKelvin - 273.15);
+            $iconId = $data['weather'][0]['icon'];
+            $iconUrl = "https://openweathermap.org/img/wn/{$iconId}@2x.png";
+
+            echo "<p>Temperature is {$tempCelsius}&deg;C.</p>";
+            echo "<img src='{$iconUrl}' alt='Weather Icon'>";
+          } else {
+            echo "<p>Sorry, an error occurred. Please try again later.</p>";
+          }
         }
-      }
-      ?>
+        ?>
+      </div>
     </main>
   </div>
 </body>
